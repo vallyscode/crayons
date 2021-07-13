@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getCrayonsMeta } from './crayons';
+import { getCrayons } from './crayons';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!editor) {
           return;
         }
-        getCrayonsMeta(editor).highlight();
+        getCrayons(editor).highlight();
       }
     ),
     vscode.commands.registerCommand(
@@ -21,11 +21,15 @@ export function activate(context: vscode.ExtensionContext) {
         if (!editor) {
           return;
         }
-        getCrayonsMeta(editor).clear();
+        getCrayons(editor).clear();
       }
     ),
-    vscode.workspace.onDidChangeTextDocument(() => { }),
-    vscode.window.onDidChangeActiveTextEditor(() => { }),
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      console.log("onDidChangeTextDocument", event);
+    }),
+    vscode.window.onDidChangeActiveTextEditor((event) => {
+      console.log("onDidChangeActiveTextEditor", event);
+    }),
   );
 
 }

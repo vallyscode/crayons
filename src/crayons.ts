@@ -6,7 +6,6 @@ import {
   TextEditorDecorationType,
   OverviewRulerLane,
   DecorationOptions,
-  DecorationRenderOptions,
 } from "vscode";
 
 export class Crayons {
@@ -21,22 +20,11 @@ export class Crayons {
   }
 
   public highlight() {
-    const word = this.getSelectedWord();
-    const regex = RegExp(word, 'g');
-    let decorations: DecorationOptions[] = [];
-    let match;
-    while ((match = regex.exec(this.editor.document.getText()))) {
-      const decoration = {
-        range: new Range(
-          this.editor.document.positionAt(match.index),
-          this.editor.document.positionAt(match.index + match[0].length)
-        ),
-      };
-      decorations.push(decoration)
-    }
-    this.words.push(word);
-    const idx = this.words.indexOf(word);
-    this.editor.setDecorations(this.decorationTypes[idx], decorations);
+    this.decorate(this.getSelectedWord());
+  }
+
+  public refresh() {
+    this.words.forEach(word => this.decorate(word));
   }
 
   public clear() {
@@ -53,6 +41,33 @@ export class Crayons {
     return "";
   }
 
+  private decorate(word: string) {
+    const regex = RegExp(word, 'g');
+    let decorations: DecorationOptions[] = [];
+    let match;
+    while ((match = regex.exec(this.editor.document.getText()))) {
+      const decoration = {
+        range: new Range(
+          this.editor.document.positionAt(match.index),
+          this.editor.document.positionAt(match.index + match[0].length)
+        ),
+      };
+      decorations.push(decoration)
+    }
+
+    if (this.words.indexOf(word) === -1) {
+      this.words.push(word);
+    }
+
+    let idx = this.words.indexOf(word);
+
+    if (idx >= this.decorationTypes.length) {
+      idx %= this.decorationTypes.length;
+    }
+
+    this.editor.setDecorations(this.decorationTypes[idx], decorations);
+  }
+
 }
 
 let editorCrayons = new Map<TextEditor, Crayons>();
@@ -66,7 +81,7 @@ function createIfAbsent<A, B>(key: A, map: Map<A, B>, def: () => B): B {
   return value;
 }
 
-export function getCrayonsMeta(editor: TextEditor): Crayons {
+export function getCrayons(editor: TextEditor): Crayons {
   return createIfAbsent(editor, editorCrayons, () => new Crayons(editor));
 }
 
@@ -76,22 +91,34 @@ function fromConfig(): TextEditorDecorationType[] {
   return colors?.map(color => toDecorationType(color)) || [];
 }
 
-function toDecorationType(color: Color) {
+function toDecorationType(color: Color): TextEditorDecorationType {
   return window.createTextEditorDecorationType({
     overviewRulerLane: OverviewRulerLane.Right,
-    overviewRulerColor: "blue",
+    overviewRulerColor: `${color.light.bg}`,
     light: {
-      border: `2px solid ${color.light}`,
-      borderRadius: "4px"
+      color: `${color.light.fg}`,
+      backgroundColor: `${color.light.bg}`,
+      fontStyle: "bold",
+      border: `1px solid ${color.light.bg}`,
+      borderRadius: "4px",
     },
     dark: {
-      border: `2px solid ${color.dark}`,
-      borderRadius: "4px"
+      color: `${color.dark.fg}`,
+      backgroundColor: `${color.dark.bg}`,
+      fontStyle: "bold",
+      border: `1px solid ${color.dark.bg}`,
+      borderRadius: "4px",
     }
-  } as DecorationRenderOptions);
+  });
 }
 
 interface Color {
-  light: string;
-  dark: string;
+  light: {
+    bg: string,
+    fg: string,
+  };
+  dark: {
+    bg: string,
+    fg: string
+  };
 }

@@ -58,16 +58,44 @@
             "type": "array",
             "default": [
               {
-                "light": "#5184a8",
-                "dark": "#c7d8e4"
+                "light": {
+                  "bg": "#5184a8",
+                  "fg": "#b7ccdc"
+                },
+                "dark": {
+                  "bg": "#c7d8e4",
+                  "fg": "#ffffff"
+                }
               },
               {
-                "light": "#6168b2",
-                "dark": "#c7cae4"
+                "light": {
+                  "bg": "#6168b2",
+                  "fg": "#c7cae4"
+                },
+                "dark": {
+                  "bg": "#c7cae4",
+                  "fg": "#ffffff"
+                }
               },
               {
-                "light": "#99cb94",
-                "dark": "#cae4c7"
+                "light": {
+                  "bg": "#68b261",
+                  "fg": "#cae4c7"
+                },
+                "dark": {
+                  "bg": "#cae4c7",
+                  "fg": "#ffffff"
+                }
+              },
+              {
+                "light": {
+                  "bg": "#61b2ab",
+                  "fg": "#c7e4e1"
+                },
+                "dark": {
+                  "bg": "#61b2ab",
+                  "fg": "#c7e4e1"
+                }
               }
             ]
           }
